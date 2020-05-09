@@ -43,13 +43,13 @@ app.post('/',upload.single('photo'), (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    const pyStepup = spawn('python', ['./ml_deploy/setup_tf.py'])
+    const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
     var dataToSend
-    pyStepup.stdout.on('data', function (data) {
+    pySetup.stdout.on('data', function (data) {
         console.log('Pipe data from python script ...');
         dataToSend = data.toString();
     });
-    pyStepup.on('close',(code) => {
+    pySetup.on('close',(code) => {
         console.log(dataToSend)
         console.log('END SETUP')
     })
