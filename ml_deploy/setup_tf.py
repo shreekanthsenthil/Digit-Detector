@@ -7,13 +7,11 @@ def setup_server():
         import sys
         from tensorflow.keras.models import load_model
         import numpy as np
-        print("Libraries Sucessfully loaded")
-        return 0
+        return 1
     
     except Exception as e:
-        print("FAILED TO LOAD LIBRARIES")
-        # Returning non zero exit code that means server is not setup properly
-        return 1
+        # Returning zero exit code that means server is not setup properly
+        return 0
     
 
 if __name__ == "__main__":

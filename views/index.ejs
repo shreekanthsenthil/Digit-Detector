@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<!-- CSS For this Just an attempt -->
 <style>
     .button{
         border: none;
@@ -27,10 +26,6 @@
         line-height: 1;
     }
 </style>
-<!-- Thank god CSS ended -->
-
-<!-- JQuery for the ajax call and http request-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <!-- Main Javascript code for making the canvas and mouse handling -->
 <script type="text/javascript">
@@ -84,16 +79,17 @@
     function upload(){
 
         // Convert to jpeg image
+        document.getElementById('output').innerHTML = "Please Wait While we process your request"
         var dataURL = canvas.toDataURL("image/jpeg", 0.8);
         const formData = new FormData();
         formData.append('photo', dataURL)
 
-        fetch('/upload', {
+        fetch('/', {
             method: 'POST',
             enctype: "multipart/form-data",
             body: formData,
-            file: formData
-        }).then(() => {console.log("Success")}).catch(() => {console.log("Fail")})
+        }).then(() => {
+        }).catch(() => {console.log("Fail")})
     }
     function mouseEventHandler(res, e) 
     {
@@ -131,7 +127,11 @@
             <input type="button" value="Upload" id="clr" size="30" onclick="upload()" class="green button">
         </div>
         <canvas id="can" width="256" height="256" > </canvas>
-        <p id="output">Scribble a digit and upload to check what it is.</p>
+        <% if(data) { %>
+            <p id="output"><%= data %></p>
+        <% } else { %>
+        <p id="output">Scribble a digit to check what it is.</p>
+        <% } %>
     </div>
 </body>
 </html>

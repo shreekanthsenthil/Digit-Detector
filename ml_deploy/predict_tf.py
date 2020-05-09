@@ -1,8 +1,9 @@
-# This is just for double check. If libraries are loaded before it will not relaod.
+# This is just for double check. If libraries are loaded before it will not reload.
 import cv2
 from tensorflow.keras.models import load_model
 import numpy as np
 import sys
+import json
 
 # These lines are written in setup which should be run earlier.
 
@@ -26,11 +27,14 @@ def predict_image(model_path, img_path):
     img = np.array(img)
     img = np.expand_dims(img, axis=-1)
     img = np.expand_dims(img, axis=0)
-    # print(img.shape)
+    #print(img.shape)
     out = final_model.predict(img)
     # The digit with highest probability
     return (np.argmax(softmax(out[0])))
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
+    IMAGE_PATH = sys.argv[1]    
+    print(IMAGE_PATH)
+    print("Not over YET")
     predictions = predict_image(MODEL_PATH, IMAGE_PATH)
     print(predictions)
