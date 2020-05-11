@@ -10,8 +10,14 @@ import sys
 # You need to give me these two paths relative to your server.
 # MODEL_PATH will not change. But everytime you need to give me the image path.
 # I think we need to use sys.argv[] to take the paths. Do let me know.
-MODEL_PATH = "..\\ml_code\\model.h5"
-IMAGE_PATH = "..\\uploads\\imagesimageFileName.png"
+
+# Paths are working fine Run the code from digit detector as follows
+# python .\ml_deploy\predict_tf.py
+# You need to adjust the relative paths if it is running wrong. As per node requirements.
+
+# MODEL_PATH = "ml_code\\model.h5"
+MODEL_PATH = "ml_code\\best_model"
+IMAGE_PATH = "uploads\\demo.png"
 
 def softmax(x):
     x = x.astype(np.float32)
