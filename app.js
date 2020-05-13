@@ -3,7 +3,7 @@ const multer = require('multer')
 const upload = multer({dest: __dirname + '/uploads/images'});
 const base64ToImage = require('base64-to-image');
 const  { spawn } = require('child_process')
-const PythonShell = require('python-shell')
+var moduleLoaded = 0
 
 const app = express()
 const PORT = 3000
@@ -45,18 +45,27 @@ app.post('/upload',upload.single('photo'), (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    res.render('index',{data: ''})
+    console.log(moduleLoaded)
+    if (moduleLoaded == 1) {
+        res.render('index')
+    } else {
+        console.log("FAIL")
+    }
 })
 
-app.listen(PORT, function() {
-    const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
-    var dataToSend
-    pySetup.stdout.on('data', function (data) {
-        console.log('Pipe data from python script ...');
-        dataToSend = data.toString();
-    });
-    pySetup.on('close',(code) => {
-        console.log(dataToSend)
-        console.log('END SETUP')
-    })
+
+const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
+var dataToSend
+pySetup.stdout.on('data', function (data) {
+    dataToSend = data.toString();
+});
+pySetup.on('close',(code) => {
+    if(dataToSend[0] == 1){
+        console.log("DONE")
+        moduleLoaded = 1
+    } else {
+        console.log("FAIL")
+        moduleLoaded = 0
+    }
+    app.listen(PORT)
 })
