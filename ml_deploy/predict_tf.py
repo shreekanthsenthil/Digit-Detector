@@ -17,7 +17,7 @@ import sys
 
 # MODEL_PATH = "ml_code\\model.h5"
 MODEL_PATH = "ml_code\\best_model"
-IMAGE_PATH = "uploads\\demo.png"
+IMAGE_PATH = "uploads\\imageToProcess.png"
 
 def softmax(x):
     x = x.astype(np.float32)
@@ -47,8 +47,10 @@ if __name__ == "__main__":
     # IMAGE_PATH = sys.argv[1]    
     # print(IMAGE_PATH)
     # print("Not over YET")
-    print("-----------------Running MODEL----------------")
+    #print("-----------------Running MODEL----------------")
     prediction, probability = predict_image(MODEL_PATH, IMAGE_PATH)
-    print("Confidence: %0.4f" %(probability))
-    print("Prediction: %d" %(prediction))
-    print("----------Done--------------------------------")
+    #Confidence
+    print("%0.4f" %(probability))
+    #Prediction
+    print("%d" %(prediction))
+    #print("----------Done--------------------------------")

@@ -26,7 +26,8 @@
         line-height: 1;
     }
 </style>
-
+<!--Axios CDN-->
+<script     src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <!-- Main Javascript code for making the canvas and mouse handling -->
 <script type="text/javascript">
     var canvas, ctx, flag = false,
@@ -84,11 +85,13 @@
         const formData = new FormData();
         formData.append('photo', dataURL)
 
-        fetch('/', {
+        fetch('/upload', {
             method: 'POST',
             enctype: "multipart/form-data",
             body: formData,
-        }).then(() => {
+        }).then((data) => {
+            return data.json()}).then(data => {console.log(data)
+            document.getElementById('output').innerHTML = "The number is " + data.predicted + " with confidence " + data.confidence + "."
         }).catch(() => {console.log("Fail")})
     }
     function mouseEventHandler(res, e) 
@@ -127,11 +130,9 @@
             <input type="button" value="Upload" id="clr" size="30" onclick="upload()" class="green button">
         </div>
         <canvas id="can" width="256" height="256" > </canvas>
-        <% if(data) { %>
-            <p id="output"><%= data %></p>
-        <% } else { %>
         <p id="output">Scribble a digit to check what it is.</p>
-        <% } %>
+        <p>Did We guess it correct</p>
+        <button></button>
     </div>
 </body>
 </html>
