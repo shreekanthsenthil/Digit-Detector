@@ -45,6 +45,10 @@ app.post('/upload',upload.single('photo'), (req, res) => {
 })
 
 app.get('/', (req, res) => {
+    res.render('index',{data: ''})
+})
+
+app.listen(PORT, function() {
     const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
     var dataToSend
     pySetup.stdout.on('data', function (data) {
@@ -55,7 +59,4 @@ app.get('/', (req, res) => {
         console.log(dataToSend)
         console.log('END SETUP')
     })
-    res.render('index',{data: ''})
 })
-
-app.listen(PORT)
