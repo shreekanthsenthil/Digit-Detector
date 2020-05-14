@@ -3,7 +3,9 @@ const multer = require('multer')
 const upload = multer({dest: __dirname + '/uploads/images'});
 const base64ToImage = require('base64-to-image');
 const  { spawn } = require('child_process')
+const fs = require('fs')
 var moduleLoaded = 0
+var pred
 
 const app = express()
 const PORT = 3000
@@ -30,29 +32,53 @@ app.post('/upload',upload.single('photo'), (req, res) => {
         const python = spawn('python', ['./ml_deploy/predict_tf.py',imagePath]);
         // collect data from script
         python.stdout.on('data', function (data) {
-        console.log('Pipe data from python script ...');
         result = data.toString()
         });
         // in close event we are sure that stream from child process is closed
         python.on('close', (code) => {
         let conf = result.slice(0,6)
-        let pred = result[8]
-        console.log(conf, pred)
+        pred = result[8]
         res.json({confidence: conf, predicted: pred})
         });
     }
     else throw 'error';
 })
 
+app.post('/validate', (req, res) => {
+    counts = fs.readFileSync("./uploads/count.json")
+    counts = JSON.parse(counts)
+    var path;
+    if(req.body.validate == 'yes') {
+        counts['correct'] += 1
+        count = counts['correct']
+        path = './uploads/images/correct/image_' + count + '_real_' + pred + '.png'
+    }
+    else {
+        counts['incorrect'] += 1
+        count = counts['incorrect']
+        path = './uploads/images/incorrect/image_' + count + '_real_' + req.body.correct + '_pred_' + pred + '.png'
+    }
+    fs.rename('./uploads/imageToProcess.png', path, err => {
+        if(err) {throw err}
+    })
+    fs.writeFile('./uploads/count.json', JSON.stringify(counts), err => {
+        if (err) {throw err}
+    })
+    res.redirect('/')
+})
+
 app.get('/', (req, res) => {
-    console.log(moduleLoaded)
     if (moduleLoaded == 1) {
         res.render('index')
     } else {
         console.log("FAIL")
+        res.render('404')
     }
 })
 
+app.get('*', (req, res) => {
+    res.render('404')
+})
 
 const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
 var dataToSend
