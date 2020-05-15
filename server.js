@@ -4,7 +4,7 @@ const upload = multer({dest: __dirname + '/uploads/images'});
 const base64ToImage = require('base64-to-image');
 const  { spawn } = require('child_process')
 const fs = require('fs')
-var moduleLoaded = 0
+var moduleLoaded = 1
 var pred
 
 const app = express()
@@ -84,18 +84,19 @@ app.get('*', (req, res) => {
     res.render('404')
 })
 
-const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
-var dataToSend
-pySetup.stdout.on('data', function (data) {
-    dataToSend = data.toString();
-});
-pySetup.on('close',(code) => {
-    if(dataToSend[0] == 1){
-        console.log("DONE")
-        moduleLoaded = 1
-    } else {
-        console.log("FAIL")
-        moduleLoaded = 0
-    }
-    app.listen(port)
+app.listen(port, function() {
+    const pySetup = spawn('python', ['./ml_deploy/setup_tf.py'])
+    var dataToSend
+    pySetup.stdout.on('data', function (data) {
+        dataToSend = data.toString();
+    });
+    pySetup.on('close',(code) => {
+        if(dataToSend[0] == 1){
+            console.log("DONE")
+            moduleLoaded = 1
+        } else {
+            console.log("FAIL")
+            moduleLoaded = 0
+        }
+    })
 })
