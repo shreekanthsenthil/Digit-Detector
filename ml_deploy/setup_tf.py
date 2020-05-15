@@ -3,8 +3,9 @@
 
 def setup_server():
     try:
-        import cv2
         import sys
+        # import tensorflow as tf
+        from PIL import Image
         from tensorflow.keras.models import load_model
         import numpy as np
         return 1

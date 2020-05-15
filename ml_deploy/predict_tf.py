@@ -1,9 +1,9 @@
 # This is just for double check. If libraries are loaded before it will not reload.
-import cv2
 from tensorflow.keras.models import load_model
 import numpy as np
+# import tensorflow as tf
+from PIL import Image
 import sys
-# import json
 
 # These lines are written in setup which should be run earlier.
 
@@ -17,7 +17,7 @@ import sys
 
 # MODEL_PATH = "ml_code\\model.h5"
 MODEL_PATH = "ml_code\\best_model"
-IMAGE_PATH = "uploads\\imageToProcess.png"
+IMAGE_PATH = "uploads\\images\\correct\\image_1_real_7.png"
 
 def softmax(x):
     x = x.astype(np.float32)
@@ -30,12 +30,20 @@ def predict_image(model_path, img_path):
     final_model = load_model(
         model_path, custom_objects=None, compile=True
     )
-    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, (28, 28))
+    # img = Image.Open(IMAGE_PATH)
+    # img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    # img = cv2.resize(img, (28, 28))
+    # img = np.array(img)
+    # # print(img.shape)
+    # img = tf.io.decode_png()
+    img = Image.open(IMAGE_PATH).convert('L')
+    # img = img.resize(28, 28)
+    img = img.resize((28, 28))
     img = np.array(img)
     img = np.expand_dims(img, axis=-1)
     img = np.expand_dims(img, axis=0)
-    #print(img.shape)
+    # print(img.shape)
+
     out = final_model.predict(img)
     # print(out.dtype)
     # The digit with highest probability
