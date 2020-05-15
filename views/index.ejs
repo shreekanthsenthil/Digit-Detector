@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<!-- CSS For this Just an attempt -->
 <style>
     .button{
         border: none;
@@ -26,12 +25,10 @@
         font-size: 50px;
         line-height: 1;
     }
+    .hide{
+        display: none;
+    }
 </style>
-<!-- Thank god CSS ended -->
-
-<!-- JQuery for the ajax call and http request-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
 <!-- Main Javascript code for making the canvas and mouse handling -->
 <script type="text/javascript">
     var canvas, ctx, flag = false,
@@ -79,11 +76,18 @@
     function erase(){
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, w, h);
+        document.getElementById('output').innerHTML = 'Scribble a digit to check what it is.'
+        document.getElementById('form-validate').classList.add('hide')
     }
 // Upload the digit from the canvas
     function upload(){
-
+        //Disable button for 5 seconds
+        document.getElementById('submit').disabled = true
+        setTimeout(() => {
+            document.getElementById('submit').disabled = false
+        },5000)
         // Convert to jpeg image
+        document.getElementById('output').innerHTML = "Please Wait While we process your request"
         var dataURL = canvas.toDataURL("image/jpeg", 0.8);
         const formData = new FormData();
         formData.append('photo', dataURL)
@@ -92,9 +96,34 @@
             method: 'POST',
             enctype: "multipart/form-data",
             body: formData,
-            file: formData
-        }).then(() => {console.log("Success")}).catch(() => {console.log("Fail")})
+        }).then((data) => {
+            return data.json()}).then(data => {console.log(data)
+            document.getElementById('output').innerHTML = "The number is " + data.predicted + "."
+            document.getElementById('form-validate').classList.remove('hide')
+            validate()
+        }).catch(() => {console.log("Fail")})
     }
+
+    function validate(){
+        var rad = document.getElementsByName('validate')
+        var improve = document.getElementById('improve')
+        var prev = null;
+        for(var i = 0; i < rad.length; i++) {
+            rad[i].onclick = function () {
+                (prev)? prev:null;
+                if(this !== prev) {
+                    prev = this;
+                }
+                if(this.value == 'no') {
+                    improve.classList.remove('hide')
+                }
+                else {
+                    improve.classList = ['hide']
+                }
+            };
+        }
+    }   
+
     function mouseEventHandler(res, e) 
     {
         if (res == 'down') {
@@ -128,10 +157,23 @@
         <h1>Digit Recognizer</h1>
         <div style="text-align: center; padding: 10px;">
             <input type="button" value="Clear" id="clr" size="30" onclick="erase()" class="red button">
-            <input type="button" value="Upload" id="clr" size="30" onclick="upload()" class="green button">
+            <input type="button" value="Upload" id="submit" size="30" onclick="upload()" class="green button">
         </div>
         <canvas id="can" width="256" height="256" > </canvas>
-        <p id="output">Scribble a digit and upload to check what it is.</p>
+        <p id="output">Scribble a digit to check what it is.</p>
+        <form action="/validate" method="POST" class="hide" id="form-validate" name="formValidate">
+        <p>Did We guess it correct</p>
+        <input type="radio" id="yes" name="validate" value="yes">
+        <label for="yes">Yes</label>
+        <input type="radio" id="no" name="validate" value="no">
+        <label for="no">No</label>
+        <div class="hide" id="improve">
+        <p> Ohh Sorry! Can You help us improve!!</p>
+        <label for="correct">Correct Number : </label>
+        <input type="text" id="correct" name="correct"><br>
+        </div><br>
+        <input type="submit" value="Submit">
+        </form>
     </div>
 </body>
 </html>
