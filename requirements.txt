@@ -1,4 +1,4 @@
 tensorflow==2.2.0
-numpy
-opencv-python
-sys
+numpy==1.18.1
+opencv-python==4.2.0.34
+
