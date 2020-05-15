@@ -8,7 +8,11 @@ var moduleLoaded = 0
 var pred
 
 const app = express()
-const PORT = 3000
+
+let port = process.env.PORT;
+if(port == null || port =="") {
+  port = 3000;
+}
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
@@ -93,5 +97,5 @@ pySetup.on('close',(code) => {
         console.log("FAIL")
         moduleLoaded = 0
     }
-    app.listen(PORT)
+    app.listen(port)
 })
