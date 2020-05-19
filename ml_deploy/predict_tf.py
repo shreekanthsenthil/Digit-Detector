@@ -4,6 +4,9 @@ import numpy as np
 # import tensorflow as tf
 from PIL import Image
 import sys
+import re
+from io import BytesIO
+import base64
 
 # These lines are written in setup which should be run earlier.
 
@@ -26,7 +29,7 @@ def softmax(x):
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum(axis=0) # only difference
 
-def predict_image(model_path, img_path):
+def predict_image(model_path, image):
     final_model = load_model(
         model_path, custom_objects=None, compile=True
     )
@@ -36,7 +39,10 @@ def predict_image(model_path, img_path):
     # img = np.array(img)
     # # print(img.shape)
     # img = tf.io.decode_png()
-    img = Image.open(IMAGE_PATH).convert('L')
+    #img = Image.open(IMAGE_PATH).convert('L')
+    image_data = re.sub('^data:image/.+;base64,', '', image)
+    img = Image.open(BytesIO(base64.b64decode(image_data)))
+    img = img.convert('L')
     # img = img.resize(28, 28)
     img = img.resize((28, 28))
     img = np.array(img)
@@ -56,7 +62,8 @@ if __name__ == "__main__":
     # print(IMAGE_PATH)
     # print("Not over YET")
     #print("-----------------Running MODEL----------------")
-    prediction, probability = predict_image(MODEL_PATH, IMAGE_PATH)
+    IMAGE = sys.argv[1]
+    prediction, probability = predict_image(MODEL_PATH, IMAGE)
     #Confidence
     print("%0.4f" %(probability))
     #Prediction

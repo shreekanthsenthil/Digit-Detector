@@ -26,14 +26,14 @@ app.post('/upload',upload.single('photo'), (req, res) => {
     if(req.body) {
         var base64Str = req.body.photo;
         var path = './uploads/';
-        var optionalObj = {'fileName': 'imageToProcess', 'type':'png'};
-        base64ToImage(base64Str,path,optionalObj); 
+        //var optionalObj = {'fileName': 'imageToProcess', 'type':'png'};
+        //base64ToImage(base64Str,path,optionalObj); 
 
         var imagePath = '..\\uploads\\images\\imageToProcess'
 
         var result;
         // spawn new child process to call the python script
-        const python = spawn('python', ['./ml_deploy/predict_tf.py',imagePath]);
+        const python = spawn('python', ['./ml_deploy/predict_tf.py',base64Str]);
         // collect data from script
         python.stdout.on('data', function (data) {
         result = data.toString()
@@ -48,7 +48,7 @@ app.post('/upload',upload.single('photo'), (req, res) => {
     else throw 'error';
 })
 
-app.post('/validate', (req, res) => {
+/*app.post('/validate', (req, res) => {
     counts = fs.readFileSync("./uploads/count.json")
     counts = JSON.parse(counts)
     var path;
@@ -69,6 +69,10 @@ app.post('/validate', (req, res) => {
         if (err) {throw err}
     })
     res.redirect('/')
+})*/
+
+app.post('/validate', (req, res) => {
+    res.redirect('/')
 })
 
 app.get('/', (req, res) => {
@@ -79,6 +83,7 @@ app.get('/', (req, res) => {
         res.render('404')
     }
 })
+
 
 app.get('*', (req, res) => {
     res.render('404')
